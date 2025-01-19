@@ -27,11 +27,21 @@ class Flint(Hero):
     def ability_name(self):
         return "Shatterstrike"
 
-    def ability_cast(self):
-        # Deals physical damage based on str + 0.5 * agi and reduces armor
+    def ability_cast(self, targets):
+        # Physical damage and armor reduction
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
         damage = self.str + (0.5 * self.agi)
         armor_reduction = 0.02 if self.level == 1 else 0.05 if self.level == 2 else 0.08
-        return f"{self.name} uses {self.ability}, dealing {damage} physical damage and reducing armor by {armor_reduction:.0%}!"
+        
+        actual_damage = targets[0].take_physical_damage(damage)
+        
+        # Apply armor reduction
+        old_armor = targets[0].armor
+        targets[0].armor = max(0, targets[0].armor - armor_reduction)
+        
+        return f"{self.name} uses {self.ability}, dealing {actual_damage:.0f} damage and reducing {targets[0].name}'s armor by {(old_armor - targets[0].armor):.0%}!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

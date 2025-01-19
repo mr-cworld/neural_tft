@@ -1,0 +1,52 @@
+EARTH (7 Units)
+Name	Origin	Class	Ability
+Terran	Earth	Tank	Stone Aegis: 
+Crag	Earth	Tank	Quaking Shield: 
+Flint	Earth	Bruiser	Shatterstrike: F
+Petra	Earth	Fighter	Earthen Flurry: 
+Grindol	Earth	Ranger	Crystalline Arrow: 
+Clayden	Earth	Mage	Rockslide: 
+Bedrock	Earth	Support Caster	Geo-Fortify: 
+
+WIND (7 Units)
+Name	Origin	Class	Ability
+Zephon	Wind	Tank	Cyclone Guard: 
+Skywhirl	Wind	Bruiser	Whirling Leap:
+Ruphus	Wind	Fighter	Gust Slash: 
+Skyshot	Wind	Ranger	Feathered Volley:
+Tempia	Wind	Ranger	Hurricane Arrow: 
+Galeia	Wind	Mage	Wind Shear:
+Airstorm	Wind	Support Caster	Soothing Breeze:
+
+FIRE (7 Units)
+Name	Origin	Class	Ability
+Blaze	Fire	Fighter	Burning Flurry:
+Ashira	Fire	Mage	Inferno Burst:
+Pyrrhus	Fire	Ranger	Rain of Embers: 
+Scaldor	Fire	Tank	Molten Guard: 
+Ignira	Fire	Support Caster	Cinder Ward: 
+Flare	Fire	Fighter	Blazing Strike: 
+Charion	Fire	Bruiser	Eruption Slam: 
+
+WATER (7 Units)
+Name	Origin	Class	Ability
+Aqua	Water	Fighter	Tidal Uppercut: 
+Marina	Water	Mage	Tidal Bolt: 
+Seafin	Water	Support Caster	Healing Stream: 
+Brinesh	Water	Tank	Aqua Shield: 
+Corala	Water	Ranger	Ripple Shot:
+Shoru	Water	Mage	Wave Surge: 
+Ondine	Water	Bruiser	Undertow Smash: 
+
+LIGHT (4 Units)
+Name	Origin	Class	Ability
+Aurion	Light	Tank	Beacon of Valor:
+Solwyn	Light	Fighter	Blinding Slash:
+Halo	Light	Mage	Illumine
+
+DARK (4 Units)
+Name	Origin	Class	Ability
+Umbra	Dark	Bruiser	Nightfall Cleave: 
+Noctis	Dark	Fighter	Shadow Lunge: 
+Ebonis	Dark	Mage	Eclipse Bolt: 
+Crepus	Dark	Ranger	Twilight Arrow: 

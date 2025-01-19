@@ -28,10 +28,20 @@ class Clayden(Hero):
     def ability_name(self):
         return "Rockslide"
 
-    def ability_cast(self):
+    def ability_cast(self, targets):
         # High magic damage to 3 targets
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
         damage = self.spell_power * 2
-        return f"{self.name} uses {self.ability}, dealing {damage} magic damage to 3 random targets!"
+        hits = min(len(targets), 3)
+        total_damage = 0
+        
+        for i in range(hits):
+            actual_damage = targets[i].take_magic_damage(damage)
+            total_damage += actual_damage
+        
+        return f"{self.name} uses {self.ability}, dealing {total_damage:.0f} magic damage to {hits} targets!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

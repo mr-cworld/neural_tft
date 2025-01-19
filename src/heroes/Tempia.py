@@ -27,11 +27,26 @@ class Tempia(Hero):
     def ability_name(self):
         return "Hurricane Arrow"
 
-    def ability_cast(self):
+    def ability_cast(self, targets):
         # Single powerful shot with level scaling
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
+        # High scaling with AGI
         multiplier = 1.4 if self.level == 1 else 1.8 if self.level == 2 else 2.3
         damage = self.agi * multiplier
-        return f"{self.name} uses {self.ability}, firing a powerful shot for {damage:.0f} damage!"
+        
+        # Find highest AGI target (prioritizes enemy rangers/assassins)
+        target = max(targets, key=lambda x: x.agi)
+        actual_damage = target.take_physical_damage(damage)
+        
+        # Bonus damage if target has high AGI
+        if target.agi > 50:
+            bonus_damage = target.take_physical_damage(damage * 0.25)  # 25% bonus damage
+            actual_damage += bonus_damage
+            return f"{self.name} uses {self.ability}, dealing {actual_damage:.0f} damage to high-AGI target {target.name}!"
+        
+        return f"{self.name} uses {self.ability}, dealing {actual_damage:.0f} damage to {target.name}!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

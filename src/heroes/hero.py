@@ -85,3 +85,27 @@ class Hero(ABC):
   def is_alive(self) -> bool:
     """Check if the hero is still alive"""
     return self.hp > 0
+
+  def find_target(self, enemy_player):
+    """Find a target on the enemy's board based on class priority.
+    Args:
+        enemy_player: The enemy player object containing their board/heroes
+    Returns:
+        Hero: The target hero, or None if no valid target found
+    """
+    target_priority = ['Tank', 'Bruiser', 'Fighter', 'Support', 'Mage']
+    
+    # Assume enemy_player has a property like 'board' or 'heroes' containing live heroes
+    alive_enemies = [hero for hero in enemy_player.heroes if hero.is_alive()]
+    
+    if not alive_enemies:
+      return None
+      
+    # Check each class in priority order
+    for target_class in target_priority:
+      possible_targets = [hero for hero in alive_enemies if target_class in hero.classes]
+      if possible_targets:
+        return possible_targets[0]  # Return first hero of that class found
+    
+    # If no priority target found, return first alive enemy
+    return alive_enemies[0]

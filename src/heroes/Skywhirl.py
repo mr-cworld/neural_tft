@@ -27,12 +27,27 @@ class Skywhirl(Hero):
     def ability_name(self):
         return "Whirling Leap"
 
-    def ability_cast(self):
-        # Damage based on level multiplier
-        multiplier = 2 if self.level == 1 else 3 if self.level == 2 else 4
+    def ability_cast(self, targets):
+        # Leap damage based on str + agi with AOE splash
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+            
+        # Main target damage
+        multiplier = 2.0 if self.level == 1 else 2.5 if self.level == 2 else 3.0
         main_damage = (self.str + self.agi) * multiplier
         splash_damage = main_damage * 0.3
-        return f"{self.name} uses {self.ability}, dealing {main_damage:.0f} damage to target and {splash_damage:.0f} to 2 adjacent units!"
+        
+        # Deal main damage to primary target
+        actual_damage = targets[0].take_physical_damage(main_damage)
+        total_damage = actual_damage
+        
+        # Deal splash to up to 2 additional targets
+        splash_hits = min(len(targets[1:]), 2)
+        for i in range(splash_hits):
+            splash_actual = targets[i+1].take_physical_damage(splash_damage)
+            total_damage += splash_actual
+            
+        return f"{self.name} uses {self.ability}, dealing {actual_damage:.0f} damage to {targets[0].name} and {splash_damage:.0f} splash to {splash_hits} nearby enemies!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

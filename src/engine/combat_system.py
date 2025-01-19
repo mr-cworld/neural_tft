@@ -42,7 +42,7 @@ class CombatSystem:
         # Continue combat until one side is defeated
         while self.player1.board and self.player2.board:
             combat_log.append(f"\n=== Round {round_number} ===")
-            round_log = self._simulate_round()
+            round_log = self._process_round()
             combat_log.extend(round_log)
             round_number += 1
             
@@ -52,8 +52,7 @@ class CombatSystem:
         
         return "\n".join(combat_log)
     
-    def _simulate_round(self) -> List[str]:
-        """Simulate a single round of combat where each hero acts once"""
+    def _process_round(self) -> List[str]:
         round_log = []
         active_heroes = self._get_sorted_heroes()
         
@@ -79,10 +78,14 @@ class CombatSystem:
             
             # Mana and ability check
             if hero.mana >= hero.max_mana:
-                ability_result = hero.ability_cast()
-                round_log.append(f"{owner.__class__.__name__}'s {ability_result}")  # Add owner info to ability cast
+                # Pass available targets to ability_cast
+                ability_result = hero.ability_cast(opponent.board)
+                round_log.append(f"{owner.__class__.__name__}'s {ability_result}")
                 hero.mana = 0
                 round_log.append(f"{hero.name} mana reset to 0")
+                
+                # Clean up any dead units after ability
+                opponent.remove_dead_heroes()
             else:
                 hero.mana += 1
                 round_log.append(f"{hero.name} gains 1 mana ({hero.mana}/{hero.max_mana})")

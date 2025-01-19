@@ -27,13 +27,33 @@ class Skyshot(Hero):
     def ability_name(self):
         return "Feathered Volley"
 
-    def ability_cast(self):
+    def ability_cast(self, targets):
         # Multiple arrows with crit chance
-        num_arrows = max(1, (self.agi // 69) + 1)
-        base_damage = self.agi * 0.75
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
+        import random
+        
+        # Scaling with level
+        num_arrows = max(3, (self.agi // 69) + self.level)
+        base_damage = self.agi * (0.75 if self.level == 1 else 0.9 if self.level == 2 else 1.05)
         crit_chance = 0.20 if self.level == 1 else 0.23 if self.level == 2 else 0.28
         crit_multi = 1.2 if self.level == 1 else 1.4 if self.level == 2 else 1.6
-        return f"{self.name} uses {self.ability}, firing {num_arrows} arrows for {base_damage:.0f} damage each with {crit_chance:.0%} chance to deal {crit_multi}x damage!"
+        
+        total_damage = 0
+        crits = 0
+        hits = min(len(targets), num_arrows)
+        
+        for i in range(hits):
+            damage = base_damage
+            if random.random() < crit_chance:
+                damage *= crit_multi
+                crits += 1
+            
+            actual_damage = targets[i].take_physical_damage(damage)
+            total_damage += actual_damage
+        
+        return f"{self.name} uses {self.ability}, firing {hits} arrows for {total_damage:.0f} total damage with {crits} critical hits!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

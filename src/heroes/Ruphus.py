@@ -27,12 +27,26 @@ class Ruphus(Hero):
     def ability_name(self):
         return "Gust Slash"
 
-    def ability_cast(self):
+    def ability_cast(self, targets):
         # Multiple strikes based on agi
-        num_strikes = max(2, self.agi // 100)
-        damage_per_strike = self.agi * 1.25
-        total_damage = damage_per_strike * num_strikes
-        return f"{self.name} uses {self.ability}, striking {num_strikes} times for {total_damage:.0f} total damage to second highest HP target!"
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
+        # Number of strikes scales with level
+        base_strikes = 2 if self.level == 1 else 3 if self.level == 2 else 4
+        num_strikes = max(base_strikes, self.agi // 100)
+        damage_per_strike = self.agi * (1.0 if self.level == 1 else 1.25 if self.level == 2 else 1.5)
+        
+        # Find second highest HP target
+        sorted_targets = sorted(targets, key=lambda x: x.hp, reverse=True)
+        target = sorted_targets[1] if len(sorted_targets) > 1 else sorted_targets[0]
+        
+        total_damage = 0
+        for _ in range(num_strikes):
+            actual_damage = target.take_physical_damage(damage_per_strike)
+            total_damage += actual_damage
+        
+        return f"{self.name} uses {self.ability}, striking {target.name} {num_strikes} times for {total_damage:.0f} total damage!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

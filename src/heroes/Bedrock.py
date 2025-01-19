@@ -28,11 +28,27 @@ class Bedrock(Hero):
     def ability_name(self):
         return "Geo-Fortify"
 
-    def ability_cast(self):
+    def ability_cast(self, targets):
         # Grants shield and stat boost
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
         shield = self.spell_power * 2
         stat_boost = 1 if self.level == 1 else 2 if self.level == 2 else 3
-        return f"{self.name} uses {self.ability}, granting {shield} HP shield and {stat_boost} bonus to highest stat!"
+        
+        # Apply shield to self
+        self.hp = min(self.max_hp, self.hp + shield)
+        
+        # Find highest stat and boost it
+        highest_stat = max(self.str, self.agi, self.spell_power)
+        if highest_stat == self.str:
+            self.str += stat_boost
+        elif highest_stat == self.agi:
+            self.agi += stat_boost
+        else:
+            self.spell_power += stat_boost
+        
+        return f"{self.name} uses {self.ability}, gaining {shield:.0f} HP shield and {stat_boost} to highest stat!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

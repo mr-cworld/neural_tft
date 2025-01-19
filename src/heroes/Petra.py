@@ -27,14 +27,25 @@ class Petra(Hero):
     def ability_name(self):
         return "Earthen Flurry"
 
-    def ability_cast(self):
-        # Two rapid strikes, each dealing 120% str damage
-        damage_per_hit = self.str * 1.2
-        total_damage = damage_per_hit * 2
+    def ability_cast(self, targets):
+        # Two rapid strikes with armor gain
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
+        damage_per_hit = self.str * (0.8 if self.level == 1 else 0.9 if self.level == 2 else 1.0)
+        armor_gain = 0.01 if self.level == 1 else 0.02 if self.level == 2 else 0.03
+        
+        total_damage = 0
+        # Two hits on primary target
+        for _ in range(2):
+            actual_damage = targets[0].take_physical_damage(damage_per_hit)
+            total_damage += actual_damage
+        
         # Gain armor bonus
-        armor_gain = 0.01
+        old_armor = self.armor
         self.armor = min(0.80, self.armor + armor_gain)
-        return f"{self.name} uses {self.ability}, striking twice for {total_damage} total damage and gaining {armor_gain:.0%} armor!"
+        
+        return f"{self.name} uses {self.ability}, dealing {total_damage:.0f} total damage and gaining {(self.armor - old_armor):.0%} armor!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

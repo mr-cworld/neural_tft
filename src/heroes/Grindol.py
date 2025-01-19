@@ -27,10 +27,27 @@ class Grindol(Hero):
     def ability_name(self):
         return "Crystalline Arrow"
 
-    def ability_cast(self):
-        # Damage based on both str and agi
-        damage = (1.2 * self.str) + (1.5 * self.agi)
-        return f"{self.name} uses {self.ability}, firing an arrow that deals {damage} physical damage and ricochets!"
+    def ability_cast(self, targets):
+        # Damage based on both str and agi with ricochet
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
+        
+        primary_damage = (1.2 * self.str) + (1.5 * self.agi)
+        ricochet_damage = primary_damage * 0.5  # 50% damage on ricochet
+        
+        total_damage = 0
+        hits = min(len(targets), 3)  # Primary target + up to 2 ricochets
+        
+        # Primary target
+        actual_damage = targets[0].take_physical_damage(primary_damage)
+        total_damage += actual_damage
+        
+        # Ricochet hits
+        for i in range(1, hits):
+            actual_damage = targets[i].take_physical_damage(ricochet_damage)
+            total_damage += actual_damage
+        
+        return f"{self.name} uses {self.ability}, dealing {total_damage:.0f} total damage across {hits} targets!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")
