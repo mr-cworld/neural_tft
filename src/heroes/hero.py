@@ -34,7 +34,7 @@ class Hero(ABC):
   def __init_subclass__(cls, **kwargs):
       super().__init_subclass__(**kwargs)
       if not hasattr(cls, 'origin'):
-          raise TypeError(f"{cls.__name__} must define the class attribute 'architype'")
+          raise TypeError(f"{cls.__name__} must define the class attribute 'origin'")
 
   def level_up(self):
     self.level += 1
@@ -85,3 +85,4 @@ class Hero(ABC):
   def reset_hero(self):
     self.hp = self.max_hp
     self.mana = self.starting_mana
+

@@ -2,7 +2,8 @@
 
 class Player():
     def __init__(self, hero, ai):
-        self.heroes = []
+        self.board = []
+        self.bench = []
         self.gold = 0
         self.experience = 0
         self.level = 1
@@ -13,32 +14,52 @@ class Player():
         
     # Hero Related Methods
 
-    def add_hero(self, hero):
-        self.heroes.append(hero)
+    def add_hero(self, hero, to_bench=True):
+        if to_bench:
+            if len(self.bench) >= 5:
+                return f"Error: Bench is full (max 5)"
+            self.bench.append(hero)
+        else:
+            if len(self.board) >= self.level:
+                return f"Error: Board is full (max {self.level})"
+            self.board.append(hero)
     
     def remove_hero(self, hero):
-        self.heroes.remove(hero)
+        if hero in self.bench:
+            self.bench.remove(hero)
+        elif hero in self.board:
+            self.board.remove(hero)
+        else:
+            return f"Error: Hero {hero} not found"
 
     def level_up_hero(self, hero):
+        if hero not in self.bench and hero not in self.board:
+            return f"Error: Hero {hero} not found"
+            
         if hero.level == 1:
-          if self.gold > hero.level_cost:
-            self.gold -= hero.level_cost
-            hero.level_up()
-        if hero.level == 2:
-          if self.gold > hero.level_cost:
-            self.gold -= hero.level_cost
-            hero.level_up()
-        if hero.level == 3:
-           return f"Error: Hero {hero} is already max level"
-        
+            if self.gold >= hero.level_cost:
+                self.gold -= hero.level_cost
+                hero.level_up()
+        elif hero.level == 2:
+            if self.gold >= hero.level_cost:
+                self.gold -= hero.level_cost
+                hero.level_up()
+        else:
+            return f"Error: Hero {hero} is already max level"
 
     def buy_hero(self, hero):
-        if self.gold > hero.cost:
+        if self.gold >= hero.cost:
+            if len(self.bench) >= 5:
+                return f"Error: Bench is full (max 5)"
             self.gold -= hero.cost
-            self.add_hero(hero)
+            self.add_hero(hero, to_bench=True)
+        else:
+            return f"Error: Not enough gold"
 
     def sell_hero(self, hero):
-        self.gold += hero.cost
+        if hero not in self.bench and hero not in self.board:
+            return f"Error: Hero {hero} not found"
+        self.gold += int(hero.cost * 0.8)
         self.remove_hero(hero)
   
     def buy_xp(self):
@@ -75,7 +96,7 @@ class Player():
     
     def round_end_gold(self):
        self.earn_interest()
-       self.gold += 5
+       self.gold += 3
        if self.win_streak > 3:
           self.gold += 1
           if self.win_streak > 5:
@@ -112,22 +133,29 @@ class Player():
     # Method for checking what origins and classes our heroes are, and how many of each we have
 
     def check_heroes(self):
-      origins = {}
-      classes = {}
-      for hero in self.heroes:
-        if hero.origin in origins:
-          origins[hero.origin] += 1
-        else:
-          origins[hero.origin] = 1
-        if hero.classes in classes:
-          classes[hero.classes] += 1
-        else:
-          classes[hero.classes] = 1
-      
-      self.classes = classes
-      self.origins = origins
-      return origins, classes
+        origins = {}
+        classes = {}
+        for hero in self.board:
+            if hero.origin in origins:
+                origins[hero.origin] += 1
+            else:
+                origins[hero.origin] = 1
+            if hero.classes in classes:
+                classes[hero.classes] += 1
+            else:
+                classes[hero.classes] = 1
+        
+        self.classes = classes
+        self.origins = origins
+        return origins, classes
 
+    def swap_hero(self, hero, target):
+        self.bench.remove(hero)
+        self.board.remove(target)  
+        self.board.append(hero)  
+        self.bench.append(target)  
+        return f"Hero {hero} has been swapped with {target}"
 
     # Need a method that saves team state at end of each round to json, final export will be team at each stage stiched to a giant json file, and then we can make it like backpack battles
     #back pack battles pog
+
