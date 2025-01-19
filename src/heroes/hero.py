@@ -62,8 +62,8 @@ class Hero(ABC):
     self.hp -= hit
 
   @abstractmethod
-  def ability_cast(self):
-    # Placeholder for ability cast method
+  def ability_cast(self, targets):
+    # Placeholder for ability cast method that requires targets parameter
     pass
 
   @abstractmethod

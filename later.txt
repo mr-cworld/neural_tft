@@ -1,0 +1,2 @@
+s there a better way i can just import ALL heroes? the enture library, and then import them all at once? or should i push that instation into the  and then all the hero objects are waiting there for the player?
+

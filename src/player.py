@@ -69,14 +69,18 @@ class Player():
         self.remove_hero(hero)
   
     def buy_xp(self):
-        if self.gold > 4:
-            self.gold -= 4
+        """Buy XP for 4 gold"""
+        if self.gold >= self.XP_BUY_COST:  # Use class constant
+            self.gold -= self.XP_BUY_COST
             self.experience += 4
-            self.check_level_up()  
-    
+            self.check_level_up()
+            return True
+        return False  # Return success/failure
+
     def get_xp(self):
-      self.experience += 2
-      self.check_level_up()
+        """Get XP at end of round"""
+        self.experience += 2
+        self.check_level_up()
 
     # User Exp Related Methods
     # Create a table dictionary for level up experience requirements
@@ -101,15 +105,16 @@ class Player():
       return f"Earned {interest} gold in interest"
     
     def round_end_gold(self):
-       self.earn_interest()
-       self.gold += 3
-       if self.win_streak > 3:
-          self.gold += 1
-          if self.win_streak > 5:
-            self.gold += 1
-            if self.win_streak > 7:
-              self.gold += 1
-              
+        """Add gold at the end of each round"""
+        # Add base gold plus interest (10% of current gold, rounded down)
+        interest = min(5, self.gold // 10)  # Cap interest at 5 gold
+        self.gold += self.BASE_ROUND_GOLD + interest
+        
+        # Add win/loss streak gold
+        if self.win_streak >= 2:
+            streak_gold = min(3, (self.win_streak - 1))  # Cap streak gold at 3
+            self.gold += streak_gold
+
     # Methods for win/lossing rounds
 
     def win_round(self):
@@ -123,11 +128,11 @@ class Player():
     # Methods for taking/healing damage
 
     def take_damage(self, damage):
-      self.health -= damage
-      if self.health <= 0:
-        return "Game Over"
-      #TODO - add a endgame method/way to AI to know it lost
-      return f"Player took {damage} damage, health is now {self.health}"
+        """Take damage and return game over if dead"""
+        self.health = max(0, self.health - damage)
+        if self.health <= 0:
+            return "Game Over"
+        return f"Player took {damage} damage, health is now {self.health}"
     
     def heal_damage(self, heal):
       self.health += heal

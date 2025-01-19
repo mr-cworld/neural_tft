@@ -27,18 +27,24 @@ class Craig(Hero):
     def ability_name(self):
         return "Harden"
 
-    def ability_cast(self):
-        # Craig's ability is to convert 5% of str into bonus Armor. Max of 80% bonus Armor
-       
+    def ability_cast(self, targets):
+        # Healing based on missing HP
+        if not targets:
+            return f"{self.name}'s {self.ability} found no targets!"
         
-     
-        bonus_armor_percent = (self.str * 0.05) / 100  # Convert to decimal percentage
-        self.armor += bonus_armor_percent
+        multiplier = 1.0 if self.level == 1 else 1.2 if self.level == 2 else 1.4
+        base_heal = self.spell_power * multiplier
         
-        if self.armor >= 0.80:
-            self.armor = 0.80
+        # Find lowest HP ally
+        target = min(targets, key=lambda x: x.hp/x.max_hp)
+        missing_hp_percent = 1 - (target.hp / target.max_hp)
+        heal_amount = base_heal * (1 + missing_hp_percent)  # Up to 2x healing on low HP targets
         
-        return f"{self.name} uses {self.ability} and gains {bonus_armor_percent:.2%} bonus Armor! Armor now at {self.armor:.2%}!"
+        old_hp = target.hp
+        target.hp = min(target.max_hp, target.hp + heal_amount)
+        actual_heal = target.hp - old_hp
+        
+        return f"{self.name} uses {self.ability}, healing {target.name} for {actual_heal:.0f} HP!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")

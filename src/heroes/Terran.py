@@ -7,9 +7,9 @@ class Terran(Hero):
       super().__init__(name)
       self.name = 'Terran'
       #Stats
-      self.str = 32
-      self.agi = 15
-      self.max_hp = 500
+      self.str = 55
+      self.agi = 25
+      self.max_hp = 555
       self.hp = self.max_hp
       self.armor = 0.35
       self.magic_resist = 0.35     
@@ -27,14 +27,23 @@ class Terran(Hero):
   def ability_name(self):
      return "Stone Aegis Heal"
 
-  def ability_cast(self):
-      #Terran's ability is to heal 20% of his max hp
-      heal = self.max_hp * 0.2
-      if self.hp + heal >= self.max_hp:
-         self.hp = self.max_hp
-      else:
-         self.hp = self.hp + heal
-      return f"{self.name} uses {self.ability} and heals for {heal} HP!"
+  def ability_cast(self, targets):
+    # Physical damage with armor reduction
+    if not targets:
+        return f"{self.name}'s {self.ability} found no targets!"
+        
+    multiplier = 1.0 if self.level == 1 else 1.2 if self.level == 2 else 1.4
+    damage = self.str * multiplier
+    armor_reduction = 0.05 if self.level == 1 else 0.10 if self.level == 2 else 0.15
+    
+    # Apply damage and armor reduction to primary target
+    actual_damage = targets[0].take_phys_damage(damage)
+    
+    # Apply armor reduction
+    old_armor = targets[0].armor
+    targets[0].armor = max(0, targets[0].armor - armor_reduction)
+    
+    return f"{self.name} uses {self.ability}, dealing {actual_damage:.0f} damage and reducing {targets[0].name}'s armor by {(old_armor - targets[0].armor):.0%}!"
 
 
   def level_up(self):
