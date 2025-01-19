@@ -23,7 +23,7 @@ ORIGINS = {
     "Water": Origin("Water", "Increase mana regen for all water units.", {2: "1", 4: "2", 6 : "3", 7: "4"}),
     "Earth": Origin("Earth", "Units gain armor and magic resist.", {3: 0.1, 5: 0.2, 7: 0.3}),
     "Fire": Origin("Fire", "Units deal more damage. +STR and SPELL Damage", {2:6, 4:18, 7: 30}),
-    "Air": Origin("Air", "Units gain agi.", {1:2, 2:5, 3:11, 4:23, 5:47, 6:95, 7:191}),
+    "Wind": Origin("Wind", "Units gain agi.", {1:2, 2:5, 3:11, 4:23, 5:47, 6:95, 7:191}),
     "Light": Origin("Light", "Magic Resist + STR", {2:15, 4:30}),
     "Dark": Origin("Dark", "Amor + Spell Dmg", {2:15, 4:30}),
 }

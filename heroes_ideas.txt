@@ -1,7 +1,15 @@
 
+Fire - Damage Dealers Lower HP/Defenses but higher attack/spellpower and strong abilities
+
 Name, Origin, Classes, Ability Name, Ability Cast
-Flint	Earth	Bruiser	Shatterstrike: Flint smashes the ground, dealing (str + 0.5 * agi) physical damage in a small area and reducing the targets’ Armor by (-2%, -5%, -8%) based on level.
-Petra	Earth	Fighter	Earthen Flurry: Petra strikes twice rapidly, each hit deals (str * 1.2) damage. She gains +1% armor (max 80%)
-Grindol	Earth	Ranger	Crystalline Arrow: Fires an arrow that deals agi-based physical damage(1.2*str + 1.5agi) to a single target and then ricochets to a random enemy (can be same target).
-Clayden	Earth	Mage	Rockslide: Calls a small rockslide on a target, dealing (spell_power * 2) magic damage to 3 random targets.
-Bedrock	Earth	Support 	Geo-Fortify: Bedrock channels protective magic, granting an ally (spell_power * 2) as a HP. Increases ally’s str or agi by + (1/2/3 based on level), whichever is higher for the target.
+
+FIRE (7 Units)
+Name	Origin	Class	Ability
+Blaze	Fire	Fighter	Burning Flurry: Attacks twice, each hit deals (str * (0.8/0.9/1) and applies a Burn for 2s that deals additional damage based on str+spellpower *(.2/.4/.6), higher max mana spell, like 5/7 
+
+Ashira	Fire	Mage	Inferno Burst: Deals (spell_power * 1.8) magic damage in an area hitting (random 1-4) targets for (100%-(random(1-10%)/units_hit) and ignites enemies for (3%/5%/8%) of their max HP.
+Pyrrhus	Fire	Ranger	Rain of Embers: Launches a volley of flaming arrows dealing (agi * 0.9) each. Enemies hit are ignited, taking extra (2%/3%/4%) max hp damage
+Scaldor	Fire	Tank	Molten Guard: Scaldor gains +30 Armor for 3s and any enemy that hits him in melee takes (str * 0.3/0.5/0.7) heat damage.
+Ignira	Fire	Support Caster	Cinder Ward: Places a protective flame on an ally, granting them (spell_power) HP and burning [2] enemys in targeting order for (1/3/6% max hp) damage 
+Flare	Fire	Fighter	Blazing Strike: Deals (str * 1.5) damage to a single target. If the target is below 50% max hp, this hit deals +50%/60%/75% bonus damage.
+Charion	Fire	Bruiser	Eruption Slam: Slams the ground, dealing (str + 0.5*spell_power) damage  in a small area, hitting (random 1-3 units, no unit can be hit twice). If Charion’s HP is below 50%, he erupts and he casts this rand (1-(2/3/4) times).
