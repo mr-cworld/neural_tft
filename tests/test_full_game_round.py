@@ -71,24 +71,10 @@ def main():
     # Print initial state
     print(game.get_game_state())
     
-    # Buy Phase
-    print("\n=== Buy Phase ===")
-    print("\nPlayer 1's turn:")
-    simulate_buy_phase(player1, game.shop_engine)
-    print("\nPlayer 2's turn:")
-    simulate_buy_phase(player2, game.shop_engine)
-    print(game.get_game_state())
-    
-    # Combat Phase
-    print("\n=== Combat Phase ===")
-    combat_log = game.combat_system.simulate_combat()
-    print(combat_log)
-    
-    # Process round end
-    print("\n=== Round End ===")
-    for player in game.players:
-        player.get_xp()
-        player.round_end_gold()
+    # Run game phases
+    game.process_shop_phase()
+    game.process_combat_phase()
+    game.process_round_end()
     
     # Print final state
     print(game.get_game_state())

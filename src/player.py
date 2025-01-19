@@ -118,12 +118,15 @@ class Player():
     # Methods for win/lossing rounds
 
     def win_round(self):
-      self.win_streak += 1
-      self.round_end_gold()
+        """Handle winning a round"""
+        self.win_streak += 1
+        # Victory gold will be added in round_end_gold if streak >= 2
+        self.gold += 1  # Just the victory gold
 
     def lose_round(self):
-      self.win_streak = 0
-      self.round_end_gold()
+        """Handle losing a round"""
+        self.win_streak = 0
+        # No additional gold for losing
 
     # Methods for taking/healing damage
 

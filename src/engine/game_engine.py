@@ -30,40 +30,28 @@ class GameEngine:
         self.combat_system = CombatSystem(player)
         return player
         
-    def run_round(self):
-        """Run a single round of combat"""
+    def process_combat_phase(self):
+        """Process the combat phase and apply results"""
         print("\n=== Combat Phase ===")
+        combat_result = self.combat_system.simulate_combat()
+        print(combat_result["log"])
         
-        if len(self.players) > 1:
-            # Run combat between players
-            combat_result = self.combat_system.simulate_combat()  # Changed back to simulate_combat
-            print(combat_result["log"])
-            
-            # Debug print
-            print("\nPost-combat state:")
-            for i, player in enumerate(self.players, 1):
-                print(f"Player {i} board: {[h.name for h in player.board]}")
-                print(f"Player {i} HP: {player.health}")
-            
-            # Determine winner/loser based on the combat result
-            winner = self.players[0] if combat_result["winner"] == "player1" else self.players[1]
-            loser = self.players[1] if combat_result["winner"] == "player1" else self.players[0]
-            
-            # Update win streaks and apply damage
-            winner.win_round()
-            loser.lose_round()
-            
-            # Apply damage to loser (scale with rounds)
-            damage = 2 + self.round
-            damage_result = loser.take_damage(damage)
-            print(f"\nCombat Result: {winner.__class__.__name__} wins! {loser.__class__.__name__} {damage_result}")
+        # Process round end - handle win/lose first
+        print("\n=== Round End ===")
+        if combat_result["winner"] == "player1":
+            self.players[0].win_round()
+            self.players[1].lose_round()
+        else:
+            self.players[1].win_round()
+            self.players[0].lose_round()
         
-        # Buy Phase
-        print("\n=== Buy Phase ===")
+        return combat_result
+
+    def process_round_end(self):
+        """Process end of round updates for all players"""
         for player in self.players:
             player.get_xp()
-            self.shop_engine.roll_shop(player.level)
-        
+            player.round_end_gold()
         self.round += 1
     
     def get_game_state(self):
@@ -117,3 +105,25 @@ class GameEngine:
         self.players.append(player)
         self.combat_system = CombatSystem(self.players[0], self.players[1])
         return player 
+
+    def process_shop_phase(self):
+        """Process the shopping phase for all players"""
+        print("\n=== Buy Phase ===")
+        for i, player in enumerate(self.players, 1):
+            print(f"\nPlayer {i}'s turn:")
+            shop_slots = self.shop_engine.roll_shop(player.level)
+            self._simulate_buy_phase(player, shop_slots)
+    
+    def _simulate_buy_phase(self, player, shop_slots):
+        """Simulate buying decisions for a player"""
+        for i, slot in enumerate(shop_slots):
+            if (not slot.purchased and 
+                player.gold >= slot.cost and 
+                (len(player.board) + len(player.bench) < player.level + 5)):
+                
+                hero_type = self.shop_engine.purchase_hero(i)
+                if hero_type:
+                    hero = hero_type(f"{hero_type.__name__}_{i}")
+                    player.add_hero(hero, to_bench=(len(player.board) >= player.level))
+                    player.gold -= slot.cost
+                    print(f"Purchased {hero.name} for {slot.cost} gold") 
