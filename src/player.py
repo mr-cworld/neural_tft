@@ -1,6 +1,12 @@
 #player that holds the heros and makes decisions, will be ran by the ai
 
 class Player():
+    MAX_BENCH_SIZE = 5
+    MAX_HEALTH = 100
+    SELL_RETURN_RATE = 0.8
+    XP_BUY_COST = 4
+    BASE_ROUND_GOLD = 3
+
     def __init__(self, hero, ai):
         self.board = []
         self.bench = []
@@ -8,7 +14,7 @@ class Player():
         self.experience = 0
         self.level = 1
         self.win_streak = 0
-        self.health = 100
+        self.health = self.MAX_HEALTH
         self.origins = {}
         self.classes = {}
         
@@ -59,7 +65,7 @@ class Player():
     def sell_hero(self, hero):
         if hero not in self.bench and hero not in self.board:
             return f"Error: Hero {hero} not found"
-        self.gold += int(hero.cost * 0.8)
+        self.gold += int(hero.cost * self.SELL_RETURN_RATE)
         self.remove_hero(hero)
   
     def buy_xp(self):
@@ -158,4 +164,6 @@ class Player():
 
     # Need a method that saves team state at end of each round to json, final export will be team at each stage stiched to a giant json file, and then we can make it like backpack battles
     #back pack battles pog
+
+
 

@@ -7,7 +7,7 @@ class Craig(Hero):
         super().__init__(name)
         self.name = 'Craig'
         # Stats
-        self.str = 40
+        self.str = 45
         self.agi = 15
         self.max_hp = 600
         self.hp = self.max_hp

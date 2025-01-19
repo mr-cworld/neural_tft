@@ -47,19 +47,25 @@ class Hero(ABC):
 
   def check_cast(self):
     if self.mana >= self.max_mana:
-      self.ability_cast()
+      ability_result = self.ability_cast()
       self.mana = 0
+      return ability_result
+    else:
+      return None
   
   def attack(self):
+    base_damage = (self.str * 2) + self.agi
     self.mana += 1
     self.check_cast()
-    return (self.str * 2) + self.agi
+    return base_damage
 
   def take_phys_damage(self, damage):
-    hit = damage * (1 - self.armor)
-    self.hp -= hit
+    mitigated_damage = damage * (1 - self.armor)
+    actual_damage = min(self.hp, mitigated_damage)
+    self.hp -= actual_damage
     self.mana += 1
     self.check_cast()
+    return actual_damage
   
   def take_magic_damage(self, damage):
     hit = damage * (1 - self.magic_resist)
