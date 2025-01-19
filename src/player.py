@@ -6,6 +6,8 @@ class Player():
         self.gold = 0
         self.experience = 0
         self.level = 1
+        self.win_streak = 0
+        self.health = 100
         
     # Hero Related Methods
 
@@ -24,6 +26,9 @@ class Player():
           if self.gold > hero.level_cost:
             self.gold -= hero.level_cost
             hero.level_up()
+        if hero.level == 3:
+           return f"Error: Hero {hero} is already max level"
+        
 
     def buy_hero(self, hero):
         if self.gold > hero.cost:
@@ -58,3 +63,49 @@ class Player():
         self.level_up()
         return True
       return False
+    
+    # Gold Related Methods
+
+    def earn_interest(self):
+      interest = max(5,int(self.gold / 10))
+      self.gold += interest
+      return f"Earned {interest} gold in interest"
+    
+    def round_end_gold(self):
+       self.earn_interest()
+       self.gold += 5
+       if self.win_streak > 3:
+          self.gold += 1
+          if self.win_streak > 5:
+            self.gold += 1
+            if self.win_streak > 7:
+              self.gold += 1
+              
+    # Methods for win/lossing rounds
+
+    def win_round(self):
+      self.win_streak += 1
+      self.round_end_gold()
+
+    def lose_round(self):
+      self.win_streak = 0
+      self.round_end_gold()
+
+    # Methods for taking/healing damage
+
+    def take_damage(self, damage):
+      self.health -= damage
+      if self.health <= 0:
+        return "Game Over"
+      #TODO - add a endgame method/way to AI to know it lost
+      return f"Player took {damage} damage, health is now {self.health}"
+    
+    def heal_damage(self, heal):
+      self.health += heal
+      if self.health > 100:
+        self.health = 100
+      return f"player healed for {heal} health, health is now {self.health}"
+
+
+    # Need a method that saves team state at end of each round to json, final export will be team at each stage stiched to a giant json file, and then we can make it like backpack battles
+    #back pack battles pog
