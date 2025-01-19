@@ -1,0 +1,7 @@
+
+Name, Origin, Classes, Ability Name, Ability Cast
+Flint	Earth	Bruiser	Shatterstrike: Flint smashes the ground, dealing (str + 0.5 * agi) physical damage in a small area and reducing the targets’ Armor by (-2%, -5%, -8%) based on level.
+Petra	Earth	Fighter	Earthen Flurry: Petra strikes twice rapidly, each hit deals (str * 1.2) damage. She gains +1% armor (max 80%)
+Grindol	Earth	Ranger	Crystalline Arrow: Fires an arrow that deals agi-based physical damage(1.2*str + 1.5agi) to a single target and then ricochets to a random enemy (can be same target).
+Clayden	Earth	Mage	Rockslide: Calls a small rockslide on a target, dealing (spell_power * 2) magic damage to 3 random targets.
+Bedrock	Earth	Support 	Geo-Fortify: Bedrock channels protective magic, granting an ally (spell_power * 2) as a HP. Increases ally’s str or agi by + (1/2/3 based on level), whichever is higher for the target.

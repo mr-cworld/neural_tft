@@ -25,16 +25,20 @@ class Craig(Hero):
         self.buy_price = 1
 
     def ability_name(self):
-        return "Quaking Shield"
+        return "Harden"
 
     def ability_cast(self):
         # Craig's ability is to convert 5% of str into bonus Armor. Max of 80% bonus Armor
-        bonus_armor = self.str * 0.05
-        bonus_armor_percent = bonus_armor / 100
-        self.armor += bonus_armor
+       
+        
+     
+        bonus_armor_percent = (self.str * 0.05) / 100  # Convert to decimal percentage
+        self.armor += bonus_armor_percent
+        
         if self.armor >= 0.80:
             self.armor = 0.80
-        return f"{self.name} uses {self.ability} and gains {bonus_armor} bonus Armor! Armor now at {self.armor}!"
+        
+        return f"{self.name} uses {self.ability} and gains {bonus_armor_percent:.2%} bonus Armor! Armor now at {self.armor:.2%}!"
 
     def level_up(self):
         print(f"{self.name} has leveled up!")
