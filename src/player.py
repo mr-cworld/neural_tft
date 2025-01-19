@@ -162,8 +162,20 @@ class Player():
         self.bench.append(target)  
         return f"Hero {hero} has been swapped with {target}"
 
+  #Methods for checking if player has any alive heroes / removing dead ones
+
+    def is_alive(self) -> bool:
+        """Check if the player has any heroes on their board"""
+        return len(self.board) > 0
+    
+    def has_living_heroes(self) -> bool:
+        """Check if the player has any heroes with HP > 0"""
+        return any(hero.hp > 0 for hero in self.board)
+
+    def remove_dead_heroes(self):
+        """Remove any heroes with 0 or less HP from the board"""
+        self.board = [hero for hero in self.board if hero.hp > 0]
+
     # Need a method that saves team state at end of each round to json, final export will be team at each stage stiched to a giant json file, and then we can make it like backpack battles
     #back pack battles pog
-
-
 

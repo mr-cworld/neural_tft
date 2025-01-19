@@ -45,18 +45,9 @@ class Hero(ABC):
   def remove_item(self, item):
     self.items.remove(item)
 
-  def check_cast(self):
-    if self.mana >= self.max_mana:
-      ability_result = self.ability_cast()
-      self.mana = 0
-      return ability_result
-    else:
-      return None
-  
   def attack(self):
     base_damage = (self.str * 2) + self.agi
     self.mana += 1
-    self.check_cast()
     return base_damage
 
   def take_phys_damage(self, damage):
@@ -64,7 +55,6 @@ class Hero(ABC):
     actual_damage = min(self.hp, mitigated_damage)
     self.hp -= actual_damage
     self.mana += 1
-    self.check_cast()
     return actual_damage
   
   def take_magic_damage(self, damage):
@@ -92,3 +82,6 @@ class Hero(ABC):
     self.hp = self.max_hp
     self.mana = self.starting_mana
 
+  def is_alive(self) -> bool:
+    """Check if the hero is still alive"""
+    return self.hp > 0

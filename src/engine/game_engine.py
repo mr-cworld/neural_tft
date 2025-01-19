@@ -17,19 +17,19 @@ class GameEngine:
         return player  
     
     def simulate_round(self):
-        """Simulate a single round of combat"""
+        """Simulate a complete game round (combat + buy phase)"""
         player = self.players[0]
         
-        # Run combat simulation
+        # Combat Phase - Full combat until one side is defeated
         combat_log = self.combat_system.simulate_combat()
-        print(combat_log)
         
-        # End round processing
+        # Buy Phase
+        print("\n=== Buy Phase ===")
         player.get_xp()
         player.round_end_gold()
         self.round += 1
         
-        return f"Round {self.round} completed"
+        return combat_log
     
     def get_game_state(self):
         """Return current game state"""
