@@ -8,6 +8,8 @@ class Player():
         self.level = 1
         self.win_streak = 0
         self.health = 100
+        self.origins = {}
+        self.classes = {}
         
     # Hero Related Methods
 
@@ -105,6 +107,26 @@ class Player():
       if self.health > 100:
         self.health = 100
       return f"player healed for {heal} health, health is now {self.health}"
+
+
+    # Method for checking what origins and classes our heroes are, and how many of each we have
+
+    def check_heroes(self):
+      origins = {}
+      classes = {}
+      for hero in self.heroes:
+        if hero.origin in origins:
+          origins[hero.origin] += 1
+        else:
+          origins[hero.origin] = 1
+        if hero.classes in classes:
+          classes[hero.classes] += 1
+        else:
+          classes[hero.classes] = 1
+      
+      self.classes = classes
+      self.origins = origins
+      return origins, classes
 
 
     # Need a method that saves team state at end of each round to json, final export will be team at each stage stiched to a giant json file, and then we can make it like backpack battles

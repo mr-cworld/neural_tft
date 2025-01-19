@@ -6,21 +6,26 @@ class Terran(Hero):
   def __init__(self, name):
       super().__init__(name)
       self.name = 'Terran'
-      self.str = 30
-      self.agi = 10
+      #Stats
+      self.str = 32
+      self.agi = 15
       self.max_hp = 500
       self.hp = self.max_hp
       self.armor = 0.35
       self.magic_resist = 0.35     
+      # Mana
       self.mana = 2
       self.max_mana = 7
-      
+      self.starting_mana = 2
       #Core Stats
       self.origin = 'Earth'
       self.classes = 'Tank'
-      self.ability = self.abiltity() # if I wanted to create self.ability()?
-      self.level_cost = 20
-      self.buy_price = 10
+      self.ability = self.ability_name() # if I wanted to create self.ability()?
+      self.level_cost = 6
+      self.buy_price = 1
+
+  def ability_name(self):
+     return "Stone Aegis Heal"
 
   def ability_cast(self):
       #Terran's ability is to heal 20% of his max hp
@@ -34,18 +39,16 @@ class Terran(Hero):
 
   def level_up(self):
     print(f"{self.name} has leveled up!")
+    #Level Up
     self.level += 1
+    self.level_cost = (self.level_cost * 2) + (self.level_cost / 2)
+    #Stat Changes
     self.str += (35 * self.level)
     self.agi += (12 * self.level)
-    self.max_hp = 500
-    self.hp = self.max_hp
-    self.armor = 0.35
-    self.magic_resist = 0.35     
-    self.mana = 2
-    self.max_mana = 7
-    self.origin = 'Earth'
-    self.classes = 'Tank'
-    self.ability = self.abiltity() # if I wanted to create self.ability()?
+    self.max_hp += (600 * self.level)
+    self.armor += (0.03 * self.level)
+    self.magic_resist = (0.03 * self.level)    
+
 
   """
      def __init__(self, name):

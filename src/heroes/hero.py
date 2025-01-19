@@ -25,6 +25,7 @@ class Hero(ABC):
     self.max_hp = 0
     self.hp = self.max_hp
     self.max_mana = 0
+    self.starting_mana = 0
     self.level_cost = 0
     self.buy_price = 0
     self.ability = self.ability_name()
@@ -73,3 +74,14 @@ class Hero(ABC):
   def level_up(self):
     # Placeholder for level up method
     pass
+
+  @abstractmethod
+  def ability_name(self):
+    # Placeholder for ability name method
+    pass
+
+  #Battle Prep Commands
+
+  def reset_hero(self):
+    self.hp = self.max_hp
+    self.mana = self.starting_mana
