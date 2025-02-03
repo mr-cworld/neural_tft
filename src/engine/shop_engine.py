@@ -10,13 +10,13 @@ class ShopSlot:
 
 class ShopEngine:
   def __init__(self):
-     # Pool of available champions per cost tier
+    
         self.champion_pool: Dict[int, List[type]] = {
-            1: [],  # 8 copies of each
-            2: [],  # 8 copies of each
-            3: [],  # 8 copies of each
-            4: [],  # 7 copies of each
-            5: []   # 5 copies of each
+            1: [],  # 29 copies of each
+            2: [],  # 22 copies of each
+            3: [],  # 18 copies of each
+            4: [],  # 12 copies of each
+            5: []   # 10 copies of each
         }
         
         self.tier_odds: Dict[int, Dict[int, float]] = {
@@ -36,10 +36,16 @@ class ShopEngine:
         self.shop_slots: List[ShopSlot] = []
         self.SHOP_SIZE = 5
 
-  def register_hero(self, hero_class: type, cost:int):
-     """Register a hero type to the pool"""
-     copies = 5 if cost == 5 else(7 if cost == 4 else 8)
-     self.champion_pool[cost].extend([hero_class]*copies)
+  def register_hero(self, hero_class: type, cost: int):
+     """Register a hero type to the pool with updated copy counts"""
+     copies = {
+         1: 29,
+         2: 22,
+         3: 18,
+         4: 12,
+         5: 10
+     }[cost]
+     self.champion_pool[cost].extend([hero_class] * copies)
 
   def roll_shop (self, player_level:int) -> List[ShopSlot]:
      """Generate a new shop based on player level"""

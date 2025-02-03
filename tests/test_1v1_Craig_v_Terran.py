@@ -5,6 +5,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from engine.game_engine import GameEngine
+from engine.combat_system import CombatSystem
+from player import Player
 from heroes.Terran import Terran
 from heroes.Craig import Craig
 
@@ -86,40 +88,75 @@ def print_cast_summary(combat_log: str):
             print(f"{unit:<15} {player:<15} {ability:<20} {casts:<5}")
 
 def main():
-    # Initialize game
+    # Initialize game with just 2 players for 1v1 test
     game = GameEngine()
-    terran_player = game.initialize_game()
-    craig_player = game.add_player()
     
-    # Create heroes for 1v1
-    terran = Terran("Terran Warrior")
-    craig = Craig("Craig Fighter")
+    # Clear any existing players and add just our test players
+    game.players.clear()
     
-    # Add heroes to players' boards (no bench this time)
-    terran_player.add_hero(terran, to_bench=False)
-    craig_player.add_hero(craig, to_bench=False)
+    # Create player 1 with Craig
+    player1 = Player(hero=None, ai=None)
+    player1.gold = 10
+    player1.add_hero(Craig("Craig Fighter"), to_bench=False)
+    game.players.append(player1)
+    
+    # Create player 2 with Terran
+    player2 = Player(hero=None, ai=None)
+    player2.gold = 10
+    player2.add_hero(Terran("Terran Warrior"), to_bench=False)
+    game.players.append(player2)
+    
+    # Initialize combat system
+    game.combat_system = CombatSystem(player1, player2)
     
     # Print initial state
-    print("\n=== Game Start ===")
-    print_player_state(terran_player, craig_player)
+    print(f"\n=== Round {game.round} ===")
+    print("\nPlayer 1                                    Player 2")
+    print("--------                                    --------")
+    print(f"Gold: {player1.gold:<39} Gold: {player2.gold}")
+    print(f"Level: {player1.level:<38} Level: {player2.level}")
+    print(f"HP: {player1.health:<40} HP: {player2.health}")
     
-    # Run a single complete combat (which includes multiple rounds of attacks)
-    print("\n=== Combat Phase ===")
-    combat_log = game.simulate_round()
-    print("\nCombat Log:")
-    print(combat_log)
+    print("\nBoard:                                     Board:")
+    for i in range(max(len(player1.board), len(player2.board))):
+        p1_hero = f"- {player1.board[i].get_status_string()}" if i < len(player1.board) else ""
+        p2_hero = f"- {player2.board[i].get_status_string()}" if i < len(player2.board) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
     
-    # Print cast summary
-    print_cast_summary(combat_log)
+    print("\nBench:                                     Bench:")
+    for i in range(max(len(player1.bench), len(player2.bench))):
+        p1_hero = f"- {player1.bench[i].get_status_string()}" if i < len(player1.bench) else ""
+        p2_hero = f"- {player2.bench[i].get_status_string()}" if i < len(player2.bench) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
+    
+    # Process shop phase
+    game.process_shop_phase()
+    
+    # Process combat phase
+    game.process_combat_phase()
+    
+    # Process round end
+    game.process_round_end()
     
     # Print final state
-    print_player_state(terran_player, craig_player, "Combat End")
+    print(f"\n=== Round {game.round} ===")
+    print("\nPlayer 1                                    Player 2")
+    print("--------                                    --------")
+    print(f"Gold: {player1.gold:<39} Gold: {player2.gold}")
+    print(f"Level: {player1.level:<38} Level: {player2.level}")
+    print(f"HP: {player1.health:<40} HP: {player2.health}")
     
-    # Determine winner
-    if not craig_player.board:
-        print("\nTerran Player Wins!")
-    elif not terran_player.board:
-        print("\nCraig Player Wins!")
+    print("\nBoard:                                     Board:")
+    for i in range(max(len(player1.board), len(player2.board))):
+        p1_hero = f"- {player1.board[i].get_status_string()}" if i < len(player1.board) else ""
+        p2_hero = f"- {player2.board[i].get_status_string()}" if i < len(player2.board) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
+    
+    print("\nBench:                                     Bench:")
+    for i in range(max(len(player1.bench), len(player2.bench))):
+        p1_hero = f"- {player1.bench[i].get_status_string()}" if i < len(player1.bench) else ""
+        p2_hero = f"- {player2.bench[i].get_status_string()}" if i < len(player2.bench) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
 
 if __name__ == "__main__":
     main() 

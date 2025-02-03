@@ -1,16 +1,18 @@
-from typing import List
+from typing import List, Optional
 from player import Player
 from heroes.Terran import Terran
 from heroes.Craig import Craig
 from engine.combat_system import CombatSystem
 from engine.shop_engine import ShopEngine
+import random
 
 class GameEngine:
     def __init__(self):
         self.round = 1
         self.players: List[Player] = []
+        self.main_player: Optional[Player] = None  # Track main player separately
         self.combat_system = None
-        self.shop_engine = ShopEngine()  # Add shop engine
+        self.shop_engine = ShopEngine()
         
         # Register all hero types with the shop
         self._register_heroes()
@@ -23,35 +25,64 @@ class GameEngine:
         # ... register other heroes ...
     
     def initialize_game(self):
-        """Initialize a new game with a single player"""
-        # Initialize player with None for both hero and AI
-        player = Player(hero=None, ai=None)  # Explicitly pass required arguments
-        self.players.append(player)
-        self.combat_system = CombatSystem(player)
-        return player
+        """Initialize a new game with main player and 7 AI opponents"""
+        # Clear any existing players first
+        self.players.clear()
         
+        # Create main player (player1)
+        self.main_player = Player(hero=None, ai=None)
+        self.main_player.gold = 10
+        self.main_player.is_main_player = True  # Add flag to identify main player
+        self.players.append(self.main_player)
+        
+        # Create 7 AI opponents
+        for i in range(7):
+            ai_player = Player(hero=None, ai=f"ai_version_{i}")  # You can customize AI versions
+            ai_player.gold = 10
+            ai_player.is_main_player = False
+            self.players.append(ai_player)
+        
+        # Initialize combat system with first two players for initial setup
+        if len(self.players) >= 2:
+            self.combat_system = CombatSystem(self.players[0], self.players[1])
+        return self.main_player
+
     def process_combat_phase(self):
         """Process the combat phase and apply results"""
         print("\n=== Combat Phase ===")
-        combat_result = self.combat_system.simulate_combat()
-        print(combat_result["log"])
         
-        # Process round end - handle win/lose first
-        print("\n=== Round End ===")
-        if combat_result["winner"] == "player1":
-            self.players[0].win_round()
-            self.players[1].lose_round()
-        else:
-            self.players[1].win_round()
-            self.players[0].lose_round()
-        
-        return combat_result
+        # For 1v1 test, just use the first two players
+        if len(self.players) >= 2:
+            player1, player2 = self.players[0], self.players[1]
+            
+            # Create combat system for these two players
+            combat_system = CombatSystem(player1, player2)
+            result = combat_system.simulate_combat()
+            
+            # Apply combat results
+            if result["winner"] == "player1":
+                player1.win_round()
+                player2.lose_round()
+            else:
+                player2.win_round()
+                player1.lose_round()
+                
+            print(result["log"])
+            return result
+        return None
 
     def process_round_end(self):
-        """Process end of round updates for all players"""
+        """Process end of round updates"""
+        # Give base gold to all players
         for player in self.players:
-            player.get_xp()
-            player.round_end_gold()
+            player.gold += 5  # Base gold per round
+            
+            # Interest gold (every 10 gold = +1)
+            interest = min(player.gold // 10, 5)
+            player.gold += interest
+            
+            # Win/loss streak gold would be handled here
+            
         self.round += 1
     
     def get_game_state(self):
@@ -99,31 +130,93 @@ class GameEngine:
         return "\n".join(output)
     
     def add_player(self):
-        """Add a second player to the game"""
-        # Initialize second player with None for both hero and AI
-        player = Player(hero=None, ai=None)  # Explicitly pass required arguments
+        """Add a player to the game (up to 8 players), this method is for manual testing, the game adds 8 when initialized. never use both"""
+        # Clear existing players if any
+        self.players.clear()
+        self.main_player = None
+        
+        # Add the new player
+        player = Player(hero=None, ai=None)
+        player.gold = 10  # Starting gold
         self.players.append(player)
-        self.combat_system = CombatSystem(self.players[0], self.players[1])
-        return player 
+        
+        # Update combat system with single player for now
+        self.combat_system = CombatSystem(player, None)  # Initialize with one player
+        return player
 
     def process_shop_phase(self):
-        """Process the shopping phase for all players"""
+        """Process the shop phase for all players"""
         print("\n=== Buy Phase ===")
-        for i, player in enumerate(self.players, 1):
-            print(f"\nPlayer {i}'s turn:")
+        
+        for i, player in enumerate(self.players):
+            print(f"\nPlayer {i + 1}'s turn:")
             shop_slots = self.shop_engine.roll_shop(player.level)
-            self._simulate_buy_phase(player, shop_slots)
-    
-    def _simulate_buy_phase(self, player, shop_slots):
-        """Simulate buying decisions for a player"""
-        for i, slot in enumerate(shop_slots):
-            if (not slot.purchased and 
-                player.gold >= slot.cost and 
-                (len(player.board) + len(player.bench) < player.level + 5)):
-                
-                hero_type = self.shop_engine.purchase_hero(i)
-                if hero_type:
-                    hero = hero_type(f"{hero_type.__name__}_{i}")
-                    player.add_hero(hero, to_bench=(len(player.board) >= player.level))
-                    player.gold -= slot.cost
-                    print(f"Purchased {hero.name} for {slot.cost} gold") 
+            
+            # Simulate buying decisions
+            for slot_index, slot in enumerate(shop_slots):
+                if (not slot.purchased and 
+                    player.gold >= slot.cost and 
+                    (len(player.board) + len(player.bench) < player.level + 5)):
+                    
+                    hero_type = self.shop_engine.purchase_hero(slot_index)
+                    if hero_type:
+                        hero = hero_type(f"Player{i+1}_{hero_type.__name__}_{slot_index}")
+                        should_bench = len(player.board) >= player.level
+                        player.add_hero(hero, to_bench=should_bench)
+                        player.gold -= slot.cost
+                        print(f"Player {i+1} purchased {hero_type.__name__} for {slot.cost} gold {'(to bench)' if should_bench else ''}")
+
+    def get_detailed_state(self) -> str:
+        """Get detailed game state including all players"""
+        output = []
+        output.append(f"\n=== Round {self.round} State ===")
+        
+        for i, player in enumerate(self.players, 1):
+            output.append(f"\nPlayer {i}:")
+            output.append(player.get_state_string())
+            
+        return "\n".join(output)
+        
+    def simulate_combat_with_summary(self) -> dict:
+        """Run combat and return both results and ability summary"""
+        combat_result = self.combat_system.simulate_combat()
+        ability_summary = self.combat_system.get_ability_cast_summary()
+        
+        return {
+            "combat_log": combat_result["log"],
+            "winner": combat_result["winner"],
+            "ability_summary": ability_summary,
+            "damage_dealt": combat_result.get("damage_dealt", 0)
+        } 
+
+    def process_round(self):
+        """Process a complete round"""
+        # Shop phase
+        self.process_shop_phase()
+        
+        # Combat phase
+        combat_results = self.process_combat_phase()
+        
+        # Round end updates
+        self.process_round_end()
+        
+        return combat_results 
+
+    def get_main_player_state(self):
+        """Get detailed state for the main player"""
+        if not self.main_player:
+            return "No main player found"
+            
+        output = []
+        output.append(f"\n=== Main Player Status (Round {self.round}) ===")
+        output.append(f"Gold: {self.main_player.gold}")
+        output.append(f"Level: {self.main_player.level}")
+        output.append(f"HP: {self.main_player.health}")
+        output.append("\nBoard:")
+        for hero in self.main_player.board:
+            output.append(f"- {hero.name}: HP={hero.hp}/{hero.max_hp}, Mana={hero.mana}/{h.max_mana}")
+        output.append("\nBench:")
+        for hero in self.main_player.bench:
+            output.append(f"- {hero.name}: HP={hero.hp}/{hero.max_hp}, Mana={hero.mana}/{h.max_mana}")
+        
+        return "\n".join(output) 

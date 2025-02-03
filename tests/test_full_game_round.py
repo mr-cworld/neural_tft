@@ -53,31 +53,66 @@ def simulate_buy_phase(player, shop_engine):
 def main():
     # Initialize game
     game = GameEngine()
+    
+    # Create player 1
     player1 = game.initialize_game()
-    player2 = game.add_player()
-    
-    # Set initial state
     player1.gold = 10
-    player2.gold = 10
-    player1.health = 100
-    player2.health = 100
+    player1.add_hero(Craig("Craig1"), to_bench=False)
     
-    # Give each player a starting hero
-    terran = Terran("Terran1")
-    craig = Craig("Craig1")
-    player1.add_hero(terran, to_bench=False)
-    player2.add_hero(craig, to_bench=False)
+    # Create player 2
+    player2 = game.add_player()
+    player2.gold = 10
+    player2.add_hero(Terran("Terran1"), to_bench=False)
     
     # Print initial state
-    print(game.get_game_state())
+    print(f"\n=== Round {game.round} ===")
+    print("\nPlayer 1                                    Player 2")
+    print("--------                                    --------")
+    print(f"Gold: {player1.gold:<39} Gold: {player2.gold}")
+    print(f"Level: {player1.level:<38} Level: {player2.level}")
+    print(f"HP: {player1.health:<40} HP: {player2.health}")
+    
+    print("\nBoard:                                     Board:")
+    for i in range(max(len(player1.board), len(player2.board))):
+        p1_hero = f"- {player1.board[i].get_status_string()}" if i < len(player1.board) else ""
+        p2_hero = f"- {player2.board[i].get_status_string()}" if i < len(player2.board) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
+    
+    print("\nBench:                                     Bench:")
+    for i in range(max(len(player1.bench), len(player2.bench))):
+        p1_hero = f"- {player1.bench[i].get_status_string()}" if i < len(player1.bench) else ""
+        p2_hero = f"- {player2.bench[i].get_status_string()}" if i < len(player2.bench) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
     
     # Run game phases
+    print("\n=== Buy Phase ===")
+    print("\nPlayer 1's turn:")
     game.process_shop_phase()
-    game.process_combat_phase()
-    game.process_round_end()
     
-    # Print final state
-    print(game.get_game_state())
+    print("\n=== Combat Phase ===")
+    game.process_combat_phase()
+    
+    # Process round end and print final state
+    game.process_round_end()
+    print(f"\n=== Round {game.round} ===")
+    
+    print("\nPlayer 1                                    Player 2")
+    print("--------                                    --------")
+    print(f"Gold: {player1.gold:<39} Gold: {player2.gold}")
+    print(f"Level: {player1.level:<38} Level: {player2.level}")
+    print(f"HP: {player1.health:<40} HP: {player2.health}")
+    
+    print("\nBoard:                                     Board:")
+    for i in range(max(len(player1.board), len(player2.board))):
+        p1_hero = f"- {player1.board[i].get_status_string()}" if i < len(player1.board) else ""
+        p2_hero = f"- {player2.board[i].get_status_string()}" if i < len(player2.board) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
+    
+    print("\nBench:                                     Bench:")
+    for i in range(max(len(player1.bench), len(player2.bench))):
+        p1_hero = f"- {player1.bench[i].get_status_string()}" if i < len(player1.bench) else ""
+        p2_hero = f"- {player2.bench[i].get_status_string()}" if i < len(player2.bench) else ""
+        print(f"{p1_hero:<40} {p2_hero}")
 
 if __name__ == "__main__":
     main() 

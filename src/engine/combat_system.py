@@ -3,6 +3,8 @@ from player import Player
 from engine.combat_logger import CombatLogger
 from copy import deepcopy
 import math
+from heroes.hero import Hero
+
 
 class CombatSystem:
     def __init__(self, player1: Player, player2: Player = None):
@@ -13,6 +15,7 @@ class CombatSystem:
         # Add state preservation
         self.preserved_p1_board = []
         self.preserved_p2_board = []
+        self.ability_casts = {}  # Format: {(unit_name, player_name, ability_name): count}
         
     def _reset_heroes(self) -> None:
         """Reset heroes only at the start of combat"""
@@ -158,3 +161,24 @@ class CombatSystem:
                 round_log.append(f"{hero.name} gains 1 mana ({hero.mana}/{hero.max_mana})")
                 
         return round_log 
+
+    def _record_ability_cast(self, hero: Hero, player: Player, ability_name: str):
+        """Record an ability cast for summary"""
+        key = (hero.name, player.__class__.__name__, ability_name)
+        self.ability_casts[key] = self.ability_casts.get(key, 0) + 1
+        
+    def get_ability_cast_summary(self) -> str:
+        """Return formatted summary of ability casts"""
+        if not self.ability_casts:
+            return "No abilities were cast during combat"
+            
+        output = ["\n=== Ability Cast Summary ==="]
+        output.append(f"{'Unit':<15} {'Player':<15} {'Ability':<20} {'Casts':<5}")
+        output.append("-" * 55)
+        
+        # Sort by cast count (descending)
+        sorted_casts = sorted(self.ability_casts.items(), key=lambda x: x[1], reverse=True)
+        for (unit, player, ability), casts in sorted_casts:
+            output.append(f"{unit:<15} {player:<15} {ability:<20} {casts:<5}")
+            
+        return "\n".join(output) 

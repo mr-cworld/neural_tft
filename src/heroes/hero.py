@@ -109,3 +109,7 @@ class Hero(ABC):
     
     # If no priority target found, return first alive enemy
     return alive_enemies[0]
+
+  def get_status_string(self) -> str:
+    """Return formatted string of hero's current status"""
+    return f"{self.name}: HP={self.hp}/{self.max_hp}, Mana={self.mana}/{self.max_mana}"

@@ -187,3 +187,27 @@ class Player():
     # Need a method that saves team state at end of each round to json, final export will be team at each stage stiched to a giant json file, and then we can make it like backpack battles
     #back pack battles pog
 
+    def get_state_string(self) -> str:
+        """Return formatted string of player's current state"""
+        output = []
+        output.append(f"Gold: {self.gold}")
+        output.append(f"Level: {self.level}")
+        output.append(f"HP: {self.health}")
+        output.append(f"XP: {self.experience}/{self.level_up_table[self.level]}")
+        
+        output.append("\nBoard Heroes:")
+        if self.board:
+            for hero in self.board:
+                output.append(f"- {hero.get_status_string()}")
+        else:
+            output.append("- Empty")
+            
+        output.append("\nBench Heroes:")
+        if self.bench:
+            for hero in self.bench:
+                output.append(f"- {hero.get_status_string()}")
+        else:
+            output.append("- Empty")
+            
+        return "\n".join(output)
+

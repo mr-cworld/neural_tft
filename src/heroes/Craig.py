@@ -28,15 +28,20 @@ class Craig(Hero):
         return "Harden"
 
     def ability_cast(self, targets):
-        # Healing based on missing HP
-        if not targets:
-            return f"{self.name}'s {self.ability} found no targets!"
+        """Heal the lowest HP% ally on the team"""
+        # Filter targets to only include allies (same team)
+        allies = [t for t in targets if t.team == self.team]
         
+        if not allies:
+            return f"{self.name}'s {self.ability} found no allies!"
+        
+        # Find ally with lowest HP percentage
+        target = min(allies, key=lambda x: x.hp/x.max_hp)
+        
+        # Calculate healing based on target's missing HP
         multiplier = 1.0 if self.level == 1 else 1.2 if self.level == 2 else 1.4
-        base_heal = self.spell_power * multiplier
+        base_heal = 100 * multiplier
         
-        # Find lowest HP ally
-        target = min(targets, key=lambda x: x.hp/x.max_hp)
         missing_hp_percent = 1 - (target.hp / target.max_hp)
         heal_amount = base_heal * (1 + missing_hp_percent)  # Up to 2x healing on low HP targets
         
