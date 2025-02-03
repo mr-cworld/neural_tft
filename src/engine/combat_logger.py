@@ -64,3 +64,15 @@ class CombatLogger:
       "board": [(hero.name, hero.hp, hero.max_hp, hero.mana) for hero in player.board]
     }
 
+  def record_ability_cast(self, hero_name: str, ability_name: str):
+    """Record an ability cast for a hero"""
+    if hero_name not in self.hero_stats:
+        self.hero_stats[hero_name] = HeroCombatStats(hero_name)
+    self.hero_stats[hero_name].abilities_cast.append(ability_name)
+
+  def record_attack(self, hero_name: str, damage: float):
+    """Record an attack for a hero"""
+    if hero_name not in self.hero_stats:
+        self.hero_stats[hero_name] = HeroCombatStats(hero_name)
+    self.hero_stats[hero_name].attacks_done.append(damage)
+

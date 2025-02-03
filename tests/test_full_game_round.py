@@ -7,6 +7,8 @@ from heroes.Terran import Terran
 from heroes.Craig import Craig
 from heroes.Rillan import Rillan
 from heroes.Charion import Charion
+from engine.combat_system import CombatSystem
+from player import Player
 
 def print_shop_state(shop_slots):
     """Helper to print current shop state"""
@@ -53,16 +55,22 @@ def simulate_buy_phase(player, shop_engine):
 def main():
     # Initialize game
     game = GameEngine()
+    game.players.clear()  # Clear any existing players
     
     # Create player 1
-    player1 = game.initialize_game()
+    player1 = Player(hero=None, ai=None)
     player1.gold = 10
-    player1.add_hero(Craig("Craig1"), to_bench=False)
+    player1.add_hero(Craig("P1_Craig1"), to_bench=False)
+    game.players.append(player1)
     
     # Create player 2
-    player2 = game.add_player()
+    player2 = Player(hero=None, ai=None)
     player2.gold = 10
-    player2.add_hero(Terran("Terran1"), to_bench=False)
+    player2.add_hero(Terran("P2_Terran1"), to_bench=False)
+    game.players.append(player2)
+    
+    # Initialize combat system
+    game.combat_system = CombatSystem(player1, player2)
     
     # Print initial state
     print(f"\n=== Round {game.round} ===")
@@ -89,8 +97,10 @@ def main():
     print("\nPlayer 1's turn:")
     game.process_shop_phase()
     
+    # Process combat phase
     print("\n=== Combat Phase ===")
-    game.process_combat_phase()
+    result = game.combat_system.simulate_combat()
+    print(result["log"])
     
     # Process round end and print final state
     game.process_round_end()

@@ -75,6 +75,12 @@ class CombatSystem:
         self._reset_heroes()
         self._apply_bonuses()
         
+        # Set teams for heroes
+        for hero in self.player1.board:
+            hero.team = 1
+        for hero in self.player2.board:
+            hero.team = 2
+        
         combat_log = []
         round_number = 1
         
@@ -131,26 +137,27 @@ class CombatSystem:
                 continue
                 
             opponent = self.player2 if owner == self.player1 else self.player1
-            if not opponent.board:  # Check if opponent has any units left
+            if not opponent.has_living_heroes():  # Changed from board check to living heroes check
                 break
                 
             # Attack phase
             damage = hero.attack()
-            target = opponent.board[0]  # Simple targeting for now
-            actual_damage = target.take_phys_damage(damage)
-            round_log.append(f"{owner.__class__.__name__}'s {hero.name} attacks {opponent.__class__.__name__}'s {target.name} for {actual_damage:.0f} damage!")
-            round_log.append(f"Target HP: {target.hp}/{target.max_hp}")
-            
-            # Remove dead units
-            if not target.is_alive():
-                round_log.append(f"{target.name} has been defeated!")
-                opponent.board.remove(target)
+            target = opponent.get_first_living_hero()  # Get first living hero instead of board[0]
+            if target:  # Only attack if there's a valid target
+                actual_damage = target.take_phys_damage(damage)
+                round_log.append(f"{owner.__class__.__name__}'s {hero.name} attacks {opponent.__class__.__name__}'s {target.name} for {actual_damage:.0f} damage!")
+                round_log.append(f"Target HP: {target.hp}/{target.max_hp}")
+                
+                # Clean up any dead units after attack
+                opponent.remove_dead_heroes()
             
             # Mana and ability check
             if hero.mana >= hero.max_mana:
                 # Pass available targets to ability_cast
                 ability_result = hero.ability_cast(opponent.board)
                 round_log.append(f"{owner.__class__.__name__}'s {ability_result}")
+                # Record the ability cast
+                self._record_ability_cast(hero, owner, hero.ability)
                 hero.mana = 0
                 round_log.append(f"{hero.name} mana reset to 0")
                 

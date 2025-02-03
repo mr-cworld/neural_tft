@@ -152,6 +152,12 @@ class GameEngine:
             print(f"\nPlayer {i + 1}'s turn:")
             shop_slots = self.shop_engine.roll_shop(player.level)
             
+            # Print shop state for debugging
+            print("\nShop offers:")
+            for j, slot in enumerate(shop_slots):
+                if not slot.purchased:
+                    print(f"Slot {j}: {slot.hero_type.__name__} (Cost: {slot.cost})")
+            
             # Simulate buying decisions
             for slot_index, slot in enumerate(shop_slots):
                 if (not slot.purchased and 
@@ -160,7 +166,9 @@ class GameEngine:
                     
                     hero_type = self.shop_engine.purchase_hero(slot_index)
                     if hero_type:
-                        hero = hero_type(f"Player{i+1}_{hero_type.__name__}_{slot_index}")
+                        # Create hero with unique name for this player
+                        hero = hero_type(f"P{i+1}_{hero_type.__name__}_{slot_index}")
+                        # Add hero to the correct player's board/bench
                         should_bench = len(player.board) >= player.level
                         player.add_hero(hero, to_bench=should_bench)
                         player.gold -= slot.cost

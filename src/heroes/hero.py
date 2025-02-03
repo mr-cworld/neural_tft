@@ -29,6 +29,7 @@ class Hero(ABC):
     self.level_cost = 0
     self.buy_price = 0
     self.ability = self.ability_name()
+    self.team = None  # Add team attribute
 
   @classmethod
   def __init_subclass__(cls, **kwargs):
@@ -79,8 +80,10 @@ class Hero(ABC):
   #Battle Prep Commands
 
   def reset_hero(self):
+    """Reset hero stats for new combat"""
     self.hp = self.max_hp
     self.mana = self.starting_mana
+    self.team = None  # Reset team when combat ends
 
   def is_alive(self) -> bool:
     """Check if the hero is still alive"""

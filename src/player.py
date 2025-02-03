@@ -1,5 +1,10 @@
 #player that holds the heros and makes decisions, will be ran by the ai
 
+from typing import Optional
+
+from heroes.hero import Hero
+
+
 class Player():
     MAX_BENCH_SIZE = 5
     MAX_HEALTH = 100
@@ -210,4 +215,11 @@ class Player():
             output.append("- Empty")
             
         return "\n".join(output)
+
+    def get_first_living_hero(self) -> Optional[Hero]:
+        """Get the first living hero from the board"""
+        for hero in self.board:
+            if hero.is_alive():
+                return hero
+        return None
 
